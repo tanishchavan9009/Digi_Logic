@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ DigiLogic Pro | Next-Gen Digital Electronics & Flip-Flop Lab</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons (CDN) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* ==========================================================================
+           CSS Design System & Variables
+           ========================================================================== */
+        :root {
+            --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            /* Dark Theme Colors (Default) */
+            --bg-base: #060913;
+            --bg-surface: rgba(15, 23, 42, 0.75);
+            --bg-surface-hover: rgba(30, 41, 59, 0.85);
+            --bg-card: rgba(18, 26, 47, 0.65);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(0, 240, 255, 0.3);
+            
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            
+            --accent-cyan: #00f0ff;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-magenta: #ec4899;
+            --accent-green: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+            
+            --glow-cyan: 0 0 25px rgba(0, 240, 255, 0.45);
+            --glow-green: 0 0 25px rgba(16, 185, 129, 0.5);
+            --glow-purple: 0 0 30px rgba(139, 92, 246, 0.4);
+            
+            --gradient-primary: linear-gradient(135deg, #00f0ff 0%, #3b82f6 50%, #8b5cf6 100%);
+            --gradient-card: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 22px;
+            --radius-full: 9999px;
+            
+            --shadow-subtle: 0 10px 30px -10px rgba(0,0,0,0.5);
+            --shadow-floating: 0 20px 40px -15px rgba(0, 240, 255, 0.15);
+        }
+
+        [data-theme="light"] {
+            --bg-base: #f1f5f9;
+            --bg-surface: rgba(255, 255, 255, 0.85);
+            --bg-surface-hover: rgba(248, 250, 252, 0.95);
+            --bg-card: rgba(255, 255, 255, 0.9);
+            --border-glass: rgba(0, 0, 0, 0.08);
+            --border-glow: rgba(0, 114, 255, 0.4);
+            
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            
+            --glow-cyan: 0 0 20px rgba(0, 180, 255, 0.35);
+            --shadow-subtle: 0 10px 30px -10px rgba(0,0,0,0.08);
+        }
+
+        /* ==========================================================================
+           Reset & Base Styles
+           ========================================================================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+            transition: background-color 0.4s ease, color 0.4s ease;
+            position: relative;
+        }
+
+        /* Dynamic Background Radial Gradients */
+        .bg-mesh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 15% 20%, rgba(0, 240, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.1) 0%, transparent 45%),
+                radial-gradient(circle at 50% 80%, rgba(236, 72, 153, 0.07) 0%, transparent 50%);
+        }
+
+        /* ==========================================================================
+           Navigation Bar
+           ========================================================================== */
+        header {
+            position: sticky;
+            top: 16px;
+            z-index: 1000;
+            padding: 0 24px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .nav-pill {
+            background: var(--bg-surface);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-full);
+            padding: 12px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-subtle);
+            transition: border-color 0.3s ease;
+        }
+
+        .nav-pill:hover {
+            border-color: var(--border-glow);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 800;
+            font-size: 1.35rem;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            box-shadow: var(--glow-cyan);
+        }
+
+        .brand-text span {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav.nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            font-size: 0.92rem;
+            font-weight: 500;
+            transition: all 0.25s ease;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .theme-btn, .sound-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s ease;
+        }
+
+        .theme-btn:hover, .sound-btn:hover {
+            transform: scale(1.08);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        /* ==========================================================================
+           Hero Section
+           ========================================================================== */
+        .hero {
+            max-width: 1200px;
+            margin: 60px auto 40px;
+            padding: 0 24px;
+            text-align: center;
+            position: relative;
+        }
+
+        .badge-hero {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: var(--radius-full);
+            background: rgba(0, 240, 255, 0.08);
+            border: 1px solid rgba(0, 240, 255, 0.25);
+            color: var(--accent-cyan);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+            animation: pulse-glow 3s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            from { box-shadow: 0 0 10px rgba(0, 240, 255, 0.1); }
+            to { box-shadow: 0 0 25px rgba(0, 240, 255, 0.25); }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.4rem, 5vw, 4.2rem);
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -1.5px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 .gradient-text {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        .hero p {
+            font-size: clamp(1.05rem, 2vw, 1.25rem);
+            color: var(--text-secondary);
+            max-width: 720px;
+            margin: 0 auto 36px;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--gradient-primary);
+            color: #040813;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 14px 30px;
+            border-radius: var(--radius-full);
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--glow-cyan);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.5);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 14px 28px;
+            border-radius: var(--radius-full);
+            text-decoration: none;
+            border: 1px solid var(--border-glass);
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--text-secondary);
+            transform: translateY(-2px);
+        }
+
+        /* ==========================================================================
+           Interactive Stats Strip
+           ========================================================================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 40px auto 60px;
+            padding: 0 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            text-align: left;
+            backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-4px);
+        }
+
+        .stat-icon {
+            color: var(--accent-cyan);
+            margin-bottom: 12px;
+        }
+
+        .stat-val {
+            font-size: 1.8rem;
+            font-weight: 800;
+            font-family: var(--font-mono);
+            color: var(--text-primary);
+        }
+
+        .stat-lbl {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* ==========================================================================
+           Main Container & Sections
+           ========================================================================== */
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .section {
+            margin-bottom: 90px;
+            scroll-margin-top: 100px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-tag {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--accent-cyan);
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .section-title {
+            font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+            font-weight: 800;
+            letter-spacing: -0.8px;
+            color: var(--text-primary);
+        }
+
+        .section-desc {
+            color: var(--text-secondary);
+            max-width: 650px;
+            margin: 10px auto 0;
+            font-size: 1.05rem;
+        }
+
+        /* ==========================================================================
+           Interactive Logic Gate Simulator Section
+           ========================================================================== */
+        .sim-glass-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: 36px;
+            backdrop-filter: blur(16px);
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .sim-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 36px;
+            align-items: center;
+        }
+
+        @media (max-width: 900px) {
+            .sim-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sim-canvas-box {
+            background: rgba(6, 9, 19, 0.7);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 280px;
+            position: relative;
+        }
+
+        .gate-svg-container {
+            width: 220px;
+            height: 140px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gate-svg-container svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.3));
+        }
+
+        .signal-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .led-glow-bulb {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .led-glow-bulb.high {
+            background: #00ff88;
+            box-shadow: 0 0 18px #00ff88, 0 0 35px #00ff88;
+        }
+
+        .led-glow-bulb.low {
+            background: #ef4444;
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+        }
+
+        .gate-formula-badge {
+            font-family: var(--font-mono);
+            font-size: 1.15rem;
+            color: var(--accent-cyan);
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid rgba(0, 240, 255, 0.25);
+            padding: 8px 18px;
+            border-radius: var(--radius-full);
+            margin-top: 16px;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .gate-selector-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 550px) {
+            .gate-selector-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .gate-pill-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            color: var(--text-primary);
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .gate-pill-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent-cyan);
+        }
+
+        .gate-pill-btn.active {
+            background: var(--accent-cyan);
+            color: #040813;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+        }
+
+        .binary-toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            padding: 12px 18px;
+            margin-bottom: 12px;
+        }
+
+        .switch-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .switch-btn {
+            width: 44px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border-glass);
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .switch-btn.active {
+            background: var(--accent-cyan);
+            color: #040813;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+        }
+
+        /* Truth Table Styling */
+        .truth-table-wrapper {
+            margin-top: 30px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--border-glass);
+        }
+
+        .modern-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+        }
+
+        .modern-table th {
+            background: rgba(0, 240, 255, 0.08);
+            color: var(--accent-cyan);
+            padding: 12px;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        .modern-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-glass);
+            color: var(--text-primary);
+            transition: background 0.25s ease;
+        }
+
+        .modern-table tr.active-row td {
+            background: rgba(0, 240, 255, 0.15);
+            color: #fff;
+            font-weight: 700;
+        }
+
+        /* ==========================================================================
+           Sequential Flip-Flops Section
+           ========================================================================== */
+        .ff-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .ff-tab-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            color: var(--text-secondary);
+            padding: 10px 24px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .ff-tab-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--accent-purple);
+        }
+
+        .ff-tab-btn.active {
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .ff-card {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: 36px;
+            backdrop-filter: blur(16px);
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .ff-card.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .clock-pulse-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            color: #fff;
+            border: none;
+            font-weight: 700;
+            font-size: 1.05rem;
+            padding: 14px 28px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .clock-pulse-btn:hover {
+            transform: scale(1.04);
+            box-shadow: 0 0 30px rgba(236, 72, 153, 0.6);
+        }
+
+        .clock-pulse-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* ==========================================================================
+           MSI Circuits Section (MUX / DEMUX / Decoders)
+           ========================================================================== */
+        .msi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .msi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            padding: 28px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .msi-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--border-glow);
+            box-shadow: var(--shadow-floating);
+        }
+
+        .msi-card h3 {
+            font-size: 1.35rem;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .msi-card svg {
+            margin: 18px auto;
+            display: block;
+        }
+
+        .ic-badge {
+            display: inline-block;
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(0, 240, 255, 0.25);
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            margin-top: 10px;
+        }
+
+        /* ==========================================================================
+           Gamified MCQ Quiz Section
+           ========================================================================== */
+        .quiz-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: 36px;
+            backdrop-filter: blur(16px);
+        }
+
+        .quiz-diff-selector {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .diff-btn {
+            padding: 8px 22px;
+            border-radius: var(--radius-full);
+            border: 1px solid var(--border-glass);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .diff-btn.active {
+            background: var(--accent-green);
+            color: #040813;
+            font-weight: 700;
+            border-color: var(--accent-green);
+            box-shadow: var(--glow-green);
+        }
+
+        .question-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: all 0.25s ease;
+        }
+
+        .question-card:hover {
+            border-color: rgba(255, 255, 255, 0.18);
+        }
+
+        .question-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .opt-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-sm);
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .opt-label:hover {
+            background: rgba(0, 240, 255, 0.08);
+            border-color: rgba(0, 240, 255, 0.3);
+        }
+
+        .opt-label input[type="radio"] {
+            accent-color: var(--accent-cyan);
+            width: 18px;
+            height: 18px;
+        }
+
+        .quiz-submit-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            font-weight: 700;
+            font-size: 1.05rem;
+            padding: 14px 36px;
+            border-radius: var(--radius-full);
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--glow-green);
+            transition: all 0.25s ease;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .quiz-submit-btn:hover {
+            transform: scale(1.04);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .quiz-result-banner {
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-top: 24px;
+            color: var(--accent-cyan);
+        }
+
+        /* ==========================================================================
+           Footer Section
+           ========================================================================== */
+        footer {
+            border-top: 1px solid var(--border-glass);
+            padding: 60px 24px 40px;
+            background: rgba(6, 9, 19, 0.9);
+            text-align: center;
+        }
+
+        .footer-socials {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .social-link {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+
+        .social-link:hover {
+            color: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            transform: translateY(-4px);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+        }
+
+        .footer-copy {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-mesh"></div>
+
+    <!-- Navigation Header -->
+    <header>
+        <div class="nav-pill">
+            <a href="#" class="brand">
+                <div class="brand-icon">
+                    <i data-lucide="zap"></i>
+                </div>
+                <div class="brand-text">Digi<span>Logic</span> Pro</div>
+            </a>
+
+            <nav class="nav-links">
+                <a href="#simulator" class="active">Simulator</a>
+                <a href="#sequential">Flip-Flops</a>
+                <a href="#msi">MSI Circuits</a>
+                <a href="#quiz">Quiz Lab</a>
+                <a href="#references">Cheat Sheet</a>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="sound-btn" id="soundToggle" title="Toggle Sound Feedback">
+                    <i data-lucide="volume-2" id="soundIcon"></i>
+                </button>
+                <button class="theme-btn" id="themeToggle" title="Toggle Theme">
+                    <i data-lucide="moon" id="themeIcon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="badge-hero">
+            <i data-lucide="sparkles" style="width: 16px; height: 16px;"></i>
+            <span>Interactive Digital Electronics 2.0</span>
+        </div>
+        <h1>Master Logic Gates & <br><span class="gradient-text">Sequential Flip-Flops</span></h1>
+        <p>An intuitive visual laboratory to simulate boolean gates, test memory state machines, and explore combinational data routing in real-time.</p>
+        
+        <div class="hero-cta-group">
+            <a href="#simulator" class="btn-primary">
+                <i data-lucide="play"></i> Launch Live Simulator
+            </a>
+            <a href="#sequential" class="btn-secondary">
+                <i data-lucide="cpu"></i> Explore Flip-Flops
+            </a>
+        </div>
+    </section>
+
+    <!-- Stats Matrix -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <i data-lucide="git-merge" class="stat-icon"></i>
+            <div class="stat-val">7+ Gates</div>
+            <div class="stat-lbl">SSI Logic & Inverters</div>
+        </div>
+        <div class="stat-card">
+            <i data-lucide="refresh-cw" class="stat-icon"></i>
+            <div class="stat-val">4 Flip-Flops</div>
+            <div class="stat-lbl">SR, JK, D, and T Architectures</div>
+        </div>
+        <div class="stat-card">
+            <i data-lucide="share-2" class="stat-icon"></i>
+            <div class="stat-val">MSI Routers</div>
+            <div class="stat-lbl">MUX, DEMUX & Decoders</div>
+        </div>
+        <div class="stat-card">
+            <i data-lucide="award" class="stat-icon"></i>
+            <div class="stat-val">15+ MCQs</div>
+            <div class="stat-lbl">Multi-Tier Knowledge Quiz</div>
+        </div>
+    </div>
+
+    <main class="container">
+
+        <!-- ==========================================================================
+             Section 1: Logic Gate Simulator
+             ========================================================================== -->
+        <section class="section" id="simulator">
+            <div class="section-header">
+                <span class="section-tag">01 / Small Scale Integration</span>
+                <h2 class="section-title">⚡ Interactive Logic Gate Simulator</h2>
+                <p class="section-desc">Toggle inputs in real time, view crisp SVG schematics, and watch dynamic truth tables update with zero latency.</p>
+            </div>
+
+            <div class="sim-glass-panel">
+                <div class="sim-layout">
+                    
+                    <!-- Left: Control Panel -->
+                    <div class="sim-controls">
+                        <div class="control-group">
+                            <label>SELECT GATE ARCHITECTURE</label>
+                            <div class="gate-selector-grid">
+                                <button class="gate-pill-btn active" onclick="setGate('AND')">AND</button>
+                                <button class="gate-pill-btn" onclick="setGate('OR')">OR</button>
+                                <button class="gate-pill-btn" onclick="setGate('NOT')">NOT</button>
+                                <button class="gate-pill-btn" onclick="setGate('NAND')">NAND</button>
+                                <button class="gate-pill-btn" onclick="setGate('NOR')">NOR</button>
+                                <button class="gate-pill-btn" onclick="setGate('XOR')">XOR</button>
+                                <button class="gate-pill-btn" onclick="setGate('XNOR')">XNOR</button>
+                            </div>
+                        </div>
+
+                        <!-- Binary Input A -->
+                        <div class="binary-toggle-row">
+                            <span>Input A:</span>
+                            <div class="switch-container">
+                                <button class="switch-btn active" id="btnA0" onclick="setInput('A', 0)">0</button>
+                                <button class="switch-btn" id="btnA1" onclick="setInput('A', 1)">1</button>
+                            </div>
+                        </div>
+
+                        <!-- Binary Input B -->
+                        <div class="binary-toggle-row" id="rowInputB">
+                            <span>Input B:</span>
+                            <div class="switch-container">
+                                <button class="switch-btn active" id="btnB0" onclick="setInput('B', 0)">0</button>
+                                <button class="switch-btn" id="btnB1" onclick="setInput('B', 1)">1</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Visual Schematic & Output State -->
+                    <div class="sim-canvas-box">
+                        <div class="gate-svg-container" id="gateSvgBox">
+                            <!-- Dynamic SVG inserted via JS -->
+                        </div>
+
+                        <div class="signal-indicator">
+                            <div class="led-glow-bulb low" id="ledIndicator"></div>
+                            <span style="font-weight: 700; font-size: 1.15rem;" id="outText">Output Y = 0 (LOW)</span>
+                        </div>
+
+                        <div class="gate-formula-badge" id="formulaBadge">Y = A · B (IC 7408)</div>
+                    </div>
+
+                </div>
+
+                <!-- Truth Table -->
+                <div class="truth-table-wrapper">
+                    <table class="modern-table">
+                        <thead>
+                            <tr id="tableHead">
+                                <th>Input A</th>
+                                <th>Input B</th>
+                                <th>Output Y</th>
+                                <th>State</th>
+                            </tr>
+                        </thead>
+                        <tbody id="truthTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+             Section 2: Sequential Flip-Flop Lab
+             ========================================================================== -->
+        <section class="section" id="sequential">
+            <div class="section-header">
+                <span class="section-tag">02 / Memory & State Elements</span>
+                <h2 class="section-title">🔁 Sequential Flip-Flop State Machine</h2>
+                <p class="section-desc">Unlike combinational circuits, flip-flops store state $Q$. Experiment with clock edge triggers and memory transitions.</p>
+            </div>
+
+            <!-- Tab Buttons -->
+            <div class="ff-tabs">
+                <button class="ff-tab-btn active" onclick="switchFF('sr')">SR Flip-Flop</button>
+                <button class="ff-tab-btn" onclick="switchFF('jk')">JK Flip-Flop</button>
+                <button class="ff-tab-btn" onclick="switchFF('d')">D Flip-Flop</button>
+                <button class="ff-tab-btn" onclick="switchFF('t')">T Flip-Flop</button>
+            </div>
+
+            <!-- SR Flip-Flop Card -->
+            <div class="ff-card active" id="ff-sr">
+                <div class="sim-layout">
+                    <div>
+                        <h3 style="margin-bottom: 10px;">SR (Set-Reset) Flip-Flop</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                            Basic bi-stable memory cell. $S=1, R=0$ sets $Q=1$; $S=0, R=1$ resets $Q=0$. Simultaneous $S=R=1$ is invalid.
+                        </p>
+                        
+                        <div class="binary-toggle-row">
+                            <span>Set Input (S):</span>
+                            <div class="switch-container">
+                                <button class="switch-btn active" id="srS0" onclick="setFFInput('S', 0)">0</button>
+                                <button class="switch-btn" id="srS1" onclick="setFFInput('S', 1)">1</button>
+                            </div>
+                        </div>
+
+                        <div class="binary-toggle-row">
+                            <span>Reset Input (R):</span>
+                            <div class="switch-container">
+                                <button class="switch-btn active" id="srR0" onclick="setFFInput('R', 0)">0</button>
+                                <button class="switch-btn" id="srR1" onclick="setFFInput('R', 1)">1</button>
+                            </div>
+                        </div>
+
+                        <button class="clock-pulse-btn" onclick="triggerClockPulse('sr')" style="margin-top: 15px;">
+                            <i data-lucide="clock"></i> Pulse Clock Trigger
+                        </button>
+                    </div>
+
+                    <div class="sim-canvas-box">
+                        <div style="text-align: center;">
+                            <div style="font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase;">Latched Output State</div>
+                            <div style="font-size: 3rem; font-family: var(--font-mono); font-weight: 800; color: var(--accent-cyan);" id="srQ">Q = 0</div>
+                            <div style="font-size: 1.4rem; font-family: var(--font-mono); color: var(--text-secondary);" id="srQbar">Q̅ = 1</div>
+                            <div class="gate-formula-badge" id="srStatus">Status: Memory Hold (S=0, R=0)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JK Flip-Flop Card -->
+            <div class="ff-card" id="ff-jk">
+                <div class="sim-layout">
+                    <div>
+                        <h3 style="margin-bottom: 10px;">JK Flip-Flop (Universal Sequential Cell)</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                            Eliminates the invalid state of SR flip-flops. When $J=K=1$, the output toggles $(Q \rightarrow \overline{Q})$.
+                        </p>
+
+                        <div class="binary-toggle-row">
+                            <span>J Input:</span>
+                            <div class="switch-container">
+                                <button class="switch-btn active" id="jkJ0" onclick="setFFInput('J', 0)">0</button>
+                                <button class="switch-btn" id="jkJ1" onclick="setFFInput('J', 1)">1</button>
+                            </div>
+                        </div>
+
+                        <div class="binary-toggle-row">
+                            <span>K Input:</span>
+                            <div class="switch-container">
+                                <button class="switch-btn active" id="jkK0" onclick="setFFInput('K', 0)">0</button>
+                                <button class="switch-btn" id="jkK1" onclick="setFFInput('K', 1)">1</button>
+                            </div>
+                        </div>
+
+                        <button class="clock-pulse-btn" onclick="triggerClockPulse('jk')" style="margin-top: 15px;">
+                            <i data-lucide="clock"></i> Pulse Clock Trigger
+                        </button>
+                    </div>
+
+                    <div class="sim-canvas-box">
+                        <div style="text-align: center;">
+                            <div style="font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase;">Latched Output State</div>
+                            <div style="font-size: 3rem; font-family: var(--font-mono); font-weight: 800; color: var(--accent-purple);" id="jkQ">Q = 0</div>
+                            <div style="font-size: 1.4rem; font-family: var(--font-mono); color: var(--text-secondary);" id="jkQbar">Q̅ = 1</div>
+                            <div class="gate-formula-badge" id="jkStatus">Status: Hold State</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- D Flip-Flop Card -->
+            <div class="ff-card" id="ff-d">
+                <div class="sim-layout">
+                    <div>
+                        <h3 style="margin-bottom: 10px;">D (Data / Delay) Flip-Flop</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                            The next state strictly captures input $D$ on the clock edge $(Q_{next} = D)$. Widely used in CPU registers.
+                        </p>
+
+                        <div class="binary-toggle-row">
+                            <span>Data Input (D):</span>
+                            <div class="switch-container">
+                                <button class="switch-btn active" id="dD0" onclick="setFFInput('D', 0)">0</button>
+                                <button class="switch-btn" id="dD1" onclick="setFFInput('D', 1)">1</button>
+                            </div>
+                        </div>
+
+                        <button class="clock-pulse-btn" onclick="triggerClockPulse('d')" style="margin-top: 15px;">
+                            <i data-lucide="clock"></i> Pulse Clock Trigger
+                        </button>
+                    </div>
+
+                    <div class="sim-canvas-box">
+                        <div style="text-align: center;">
+                            <div style="font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase;">Latched Output State</div>
+                            <div style="font-size: 3rem; font-family: var(--font-mono); font-weight: 800; color: var(--accent-cyan);" id="dQ">Q = 0</div>
+                            <div style="font-size: 1.4rem; font-family: var(--font-mono); color: var(--text-secondary);" id="dQbar">Q̅ = 1</div>
+                            <div class="gate-formula-badge" id="dStatus">Status: Latch D=0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- T Flip-Flop Card -->
+            <div class="ff-card" id="ff-t">
+                <div class="sim-layout">
+                    <div>
+                        <h3 style="margin-bottom: 10px;">T (Toggle) Flip-Flop</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                            When $T=1$, the state inverts on every clock pulse. Essential for frequency dividers and binary ripple counters.
+                        </p>
+
+                        <div class="binary-toggle-row">
+                            <span>Toggle Input (T):</span>
+                            <div class="switch-container">
+                                <button class="switch-btn active" id="tT0" onclick="setFFInput('T', 0)">0</button>
+                                <button class="switch-btn" id="tT1" onclick="setFFInput('T', 1)">1</button>
+                            </div>
+                        </div>
+
+                        <button class="clock-pulse-btn" onclick="triggerClockPulse('t')" style="margin-top: 15px;">
+                            <i data-lucide="clock"></i> Pulse Clock Trigger
+                        </button>
+                    </div>
+
+                    <div class="sim-canvas-box">
+                        <div style="text-align: center;">
+                            <div style="font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase;">Latched Output State</div>
+                            <div style="font-size: 3rem; font-family: var(--font-mono); font-weight: 800; color: var(--accent-magenta);" id="tQ">Q = 0</div>
+                            <div style="font-size: 1.4rem; font-family: var(--font-mono); color: var(--text-secondary);" id="tQbar">Q̅ = 1</div>
+                            <div class="gate-formula-badge" id="tStatus">Status: Hold State (T=0)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ==========================================================================
+             Section 3: MSI Combinational Circuits
+             ========================================================================== -->
+        <section class="section" id="msi">
+            <div class="section-header">
+                <span class="section-tag">03 / Data Routing & Decoding</span>
+                <h2 class="section-title">🧩 Combinational Circuits – MSI</h2>
+                <p class="section-desc">Medium Scale Integration blocks perform data selection, distribution, and binary decoding.</p>
+            </div>
+
+            <div class="msi-grid">
+                <!-- 4:1 MUX -->
+                <div class="msi-card">
+                    <h3>4:1 Multiplexer (MUX)</h3>
+                    <svg width="180" height="130" viewBox="0 0 180 130">
+                        <polygon points="50,20 120,40 120,90 50,110" fill="rgba(0, 240, 255, 0.1)" stroke="#00f0ff" stroke-width="2"/>
+                        <line x1="20" y1="35" x2="50" y2="35" stroke="#94a3b8" stroke-width="2"/>
+                        <line x1="20" y1="55" x2="50" y2="55" stroke="#94a3b8" stroke-width="2"/>
+                        <line x1="20" y1="75" x2="50" y2="75" stroke="#94a3b8" stroke-width="2"/>
+                        <line x1="20" y1="95" x2="50" y2="95" stroke="#94a3b8" stroke-width="2"/>
+                        <line x1="120" y1="65" x2="160" y2="65" stroke="#00f0ff" stroke-width="2"/>
+                        <text x="8" y="38" fill="#94a3b8" font-size="11" font-family="monospace">I0</text>
+                        <text x="8" y="58" fill="#94a3b8" font-size="11" font-family="monospace">I1</text>
+                        <text x="8" y="78" fill="#94a3b8" font-size="11" font-family="monospace">I2</text>
+                        <text x="8" y="98" fill="#94a3b8" font-size="11" font-family="monospace">I3</text>
+                        <text x="165" y="68" fill="#00f0ff" font-size="12" font-family="monospace">Y</text>
+                    </svg>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem;">Selects 1 of 4 inputs to output via select lines.</p>
+                    <span class="ic-badge">IC 74151 / 74153</span>
+                </div>
+
+                <!-- 1:4 DEMUX -->
+                <div class="msi-card">
+                    <h3>1:4 Demultiplexer</h3>
+                    <svg width="180" height="130" viewBox="0 0 180 130">
+                        <polygon points="50,40 120,20 120,110 50,90" fill="rgba(139, 92, 246, 0.1)" stroke="#8b5cf6" stroke-width="2"/>
+                        <line x1="20" y1="65" x2="50" y2="65" stroke="#8b5cf6" stroke-width="2"/>
+                        <line x1="120" y1="35" x2="155" y2="35" stroke="#94a3b8" stroke-width="2"/>
+                        <line x1="120" y1="55" x2="155" y2="55" stroke="#94a3b8" stroke-width="2"/>
+                        <line x1="120" y1="75" x2="155" y2="75" stroke="#94a3b8" stroke-width="2"/>
+                        <line x1="120" y1="95" x2="155" y2="95" stroke="#94a3b8" stroke-width="2"/>
+                        <text x="8" y="68" fill="#8b5cf6" font-size="12" font-family="monospace">In</text>
+                        <text x="160" y="38" fill="#94a3b8" font-size="11" font-family="monospace">Y0</text>
+                        <text x="160" y="58" fill="#94a3b8" font-size="11" font-family="monospace">Y1</text>
+                        <text x="160" y="78" fill="#94a3b8" font-size="11" font-family="monospace">Y2</text>
+                        <text x="160" y="98" fill="#94a3b8" font-size="11" font-family="monospace">Y3</text>
+                    </svg>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem;">Routes 1 input channel to 1 of 4 outputs.</p>
+                    <span class="ic-badge">Data Distributor</span>
+                </div>
+
+                <!-- 2:4 Decoder -->
+                <div class="msi-card">
+                    <h3>2:4 Binary Decoder</h3>
+                    <svg width="180" height="130" viewBox="0 0 180 130">
+                        <rect x="50" y="30" width="70" height="70" rx="6" fill="rgba(236, 72, 153, 0.1)" stroke="#ec4899" stroke-width="2"/>
+                        <line x1="20" y1="48" x2="50" y2="48" stroke="#94a3b8" stroke-width="2"/>
+                        <line x1="20" y1="82" x2="50" y2="82" stroke="#94a3b8" stroke-width="2"/>
+                        <line x1="120" y1="40" x2="155" y2="40" stroke="#ec4899" stroke-width="2"/>
+                        <line x1="120" y1="58" x2="155" y2="58" stroke="#ec4899" stroke-width="2"/>
+                        <line x1="120" y1="74" x2="155" y2="74" stroke="#ec4899" stroke-width="2"/>
+                        <line x1="120" y1="92" x2="155" y2="92" stroke="#ec4899" stroke-width="2"/>
+                        <text x="8" y="51" fill="#94a3b8" font-size="11" font-family="monospace">A</text>
+                        <text x="8" y="85" fill="#94a3b8" font-size="11" font-family="monospace">B</text>
+                        <text x="160" y="43" fill="#ec4899" font-size="10" font-family="monospace">Y0</text>
+                        <text x="160" y="61" fill="#ec4899" font-size="10" font-family="monospace">Y1</text>
+                        <text x="160" y="77" fill="#ec4899" font-size="10" font-family="monospace">Y2</text>
+                        <text x="160" y="95" fill="#ec4899" font-size="10" font-family="monospace">Y3</text>
+                    </svg>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem;">Converts binary code into one-hot active lines.</p>
+                    <span class="ic-badge">IC 74138</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+             Section 4: Gamified Knowledge Quiz
+             ========================================================================== -->
+        <section class="section" id="quiz">
+            <div class="section-header">
+                <span class="section-tag">04 / Knowledge Challenge</span>
+                <h2 class="section-title">🎯 Digital Logic Quiz Arena</h2>
+                <p class="section-desc">Select your difficulty level and validate your mastery of logic gates, flip-flop timing, and IC specs.</p>
+            </div>
+
+            <div class="quiz-container">
+                <div class="quiz-diff-selector">
+                    <button class="diff-btn active" onclick="loadQuiz('easy')">Easy (Fundamentals)</button>
+                    <button class="diff-btn" onclick="loadQuiz('medium')">Medium (MSI & Universal)</button>
+                    <button class="diff-btn" onclick="loadQuiz('hard')">Hard (Sequential & Equations)</button>
+                </div>
+
+                <div id="quizBox"></div>
+
+                <button class="quiz-submit-btn" id="submitQuizBtn" onclick="evaluateQuiz()">
+                    <i data-lucide="check-circle"></i> Submit Assessment
+                </button>
+
+                <div class="quiz-result-banner" id="quizResultText"></div>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+             Section 5: Learning References & Cheat Sheet
+             ========================================================================== -->
+        <section class="section" id="references">
+            <div class="section-header">
+                <span class="section-tag">05 / Reference Guide</span>
+                <h2 class="section-title">📚 Formula Sheet & Academic Links</h2>
+            </div>
+
+            <div class="msi-grid">
+                <div class="stat-card">
+                    <h4 style="color: var(--accent-cyan); margin-bottom: 12px;">🔹 Boolean Theorems</h4>
+                    <p style="font-family: var(--font-mono); font-size: 0.88rem; color: var(--text-secondary);">
+                        • De Morgan: (A·B)̅ = A̅ + B̅<br>
+                        • Inversion: (A̅)̅ = A<br>
+                        • Absorption: A + AB = A<br>
+                        • Distributive: A + BC = (A+B)(A+C)
+                    </p>
+                </div>
+
+                <div class="stat-card">
+                    <h4 style="color: var(--accent-purple); margin-bottom: 12px;">🔹 Flip-Flop Equations</h4>
+                    <p style="font-family: var(--font-mono); font-size: 0.88rem; color: var(--text-secondary);">
+                        • SR FF: Q(n+1) = S + R̅Q<br>
+                        • JK FF: Q(n+1) = JQ̅ + K̅Q<br>
+                        • D FF: Q(n+1) = D<br>
+                        • T FF: Q(n+1) = T ⊕ Q
+                    </p>
+                </div>
+
+                <div class="stat-card">
+                    <h4 style="color: var(--accent-magenta); margin-bottom: 12px;">🔹 Standard TTL ICs</h4>
+                    <p style="font-family: var(--font-mono); font-size: 0.88rem; color: var(--text-secondary);">
+                        • 7400: Quad 2-In NAND<br>
+                        • 7408: Quad 2-In AND<br>
+                        • 7432: Quad 2-In OR<br>
+                        • 7486: Quad 2-In XOR
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-socials">
+            <a href="https://github.com/tanishchavan9009/Tanish-codes" target="_blank" class="social-link" title="GitHub Repository">
+                <i data-lucide="github"></i>
+            </a>
+            <a href="#" class="social-link" title="Documentation">
+                <i data-lucide="book-open"></i>
+            </a>
+            <a href="#" class="social-link" title="Share Project">
+                <i data-lucide="share-2"></i>
+            </a>
+        </div>
+        <p class="footer-copy">
+            ⚡ <b>DigiLogic Pro</b> — Next-Gen Interactive Digital Electronics Lab • Designed by <b>Tanish</b>
+        </p>
+    </footer>
+
+    <!-- ==========================================================================
+         JavaScript Application Logic
+         ========================================================================== -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Audio Synth Feedback (Optional Haptic Audio)
+        let soundEnabled = true;
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playBeep(freq = 600, duration = 0.08) {
+            if (!soundEnabled) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = "sine";
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
+
+        document.getElementById("soundToggle").addEventListener("click", () => {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById("soundIcon");
+            icon.setAttribute("data-lucide", soundEnabled ? "volume-2" : "volume-x");
+            lucide.createIcons();
+        });
+
+        // Theme Toggle (Dark / Light)
+        const themeBtn = document.getElementById("themeToggle");
+        themeBtn.addEventListener("click", () => {
+            playBeep(800, 0.05);
+            const currentTheme = document.documentElement.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            document.documentElement.setAttribute("data-theme", newTheme);
+            const themeIcon = document.getElementById("themeIcon");
+            themeIcon.setAttribute("data-lucide", newTheme === "dark" ? "moon" : "sun");
+            lucide.createIcons();
+        });
+
+        // =========================================================================
+        // Logic Gate Simulator Engine
+        // =========================================================================
+        let currentGate = "AND";
+        let inA = 0;
+        let inB = 0;
+
+        const gateMetadata = {
+            "AND":  { expr: "Y = A · B", ic: "IC 7408", fn: (a, b) => a & b },
+            "OR":   { expr: "Y = A + B", ic: "IC 7432", fn: (a, b) => a | b },
+            "NOT":  { expr: "Y = A̅",     ic: "IC 7404", fn: (a) => a === 0 ? 1 : 0 },
+            "NAND": { expr: "Y = (A·B)̅", ic: "IC 7400", fn: (a, b) => (a & b) ? 0 : 1 },
+            "NOR":  { expr: "Y = (A+B)̅", ic: "IC 7402", fn: (a, b) => (a | b) ? 0 : 1 },
+            "XOR":  { expr: "Y = A ⊕ B", ic: "IC 7486", fn: (a, b) => a ^ b },
+            "XNOR": { expr: "Y = (A⊕B)̅", ic: "IC 74266", fn: (a, b) => a === b ? 1 : 0 }
+        };
+
+        function setGate(gateName) {
+            playBeep(700, 0.05);
+            currentGate = gateName;
+            document.querySelectorAll(".gate-pill-btn").forEach(btn => {
+                btn.classList.toggle("active", btn.innerText === gateName);
+            });
+            document.getElementById("rowInputB").style.display = gateName === "NOT" ? "none" : "flex";
+            updateSimulator();
+        }
+
+        function setInput(inputVar, val) {
+            playBeep(500, 0.05);
+            if (inputVar === 'A') {
+                inA = val;
+                document.getElementById("btnA0").classList.toggle("active", val === 0);
+                document.getElementById("btnA1").classList.toggle("active", val === 1);
+            } else {
+                inB = val;
+                document.getElementById("btnB0").classList.toggle("active", val === 0);
+                document.getElementById("btnB1").classList.toggle("active", val === 1);
+            }
+            updateSimulator();
+        }
+
+        function renderGateSVG(gate) {
+            const svgTemplates = {
+                "AND": `<svg viewBox="0 0 100 60"><path d="M20,10 L50,10 A20,20 0 0,1 50,50 L20,50 Z" fill="none" stroke="#00f0ff" stroke-width="3"/><line x1="5" y1="20" x2="20" y2="20" stroke="#00f0ff" stroke-width="3"/><line x1="5" y1="40" x2="20" y2="40" stroke="#00f0ff" stroke-width="3"/><line x1="70" y1="30" x2="95" y2="30" stroke="#00f0ff" stroke-width="3"/></svg>`,
+                "OR": `<svg viewBox="0 0 100 60"><path d="M20,10 Q40,10 65,30 Q40,50 20,50 Q35,30 20,10 Z" fill="none" stroke="#00f0ff" stroke-width="3"/><line x1="5" y1="20" x2="26" y2="20" stroke="#00f0ff" stroke-width="3"/><line x1="5" y1="40" x2="26" y2="40" stroke="#00f0ff" stroke-width="3"/><line x1="65" y1="30" x2="95" y2="30" stroke="#00f0ff" stroke-width="3"/></svg>`,
+                "NOT": `<svg viewBox="0 0 100 60"><polygon points="25,10 65,30 25,50" fill="none" stroke="#00f0ff" stroke-width="3"/><circle cx="70" cy="30" r="5" fill="none" stroke="#00f0ff" stroke-width="2"/><line x1="5" y1="30" x2="25" y2="30" stroke="#00f0ff" stroke-width="3"/><line x1="75" y1="30" x2="95" y2="30" stroke="#00f0ff" stroke-width="3"/></svg>`,
+                "NAND": `<svg viewBox="0 0 100 60"><path d="M20,10 L50,10 A20,20 0 0,1 50,50 L20,50 Z" fill="none" stroke="#00f0ff" stroke-width="3"/><circle cx="74" cy="30" r="4" fill="none" stroke="#00f0ff" stroke-width="2"/><line x1="5" y1="20" x2="20" y2="20" stroke="#00f0ff" stroke-width="3"/><line x1="5" y1="40" x2="20" y2="40" stroke="#00f0ff" stroke-width="3"/><line x1="78" y1="30" x2="95" y2="30" stroke="#00f0ff" stroke-width="3"/></svg>`,
+                "NOR": `<svg viewBox="0 0 100 60"><path d="M20,10 Q40,10 60,30 Q40,50 20,50 Q35,30 20,10 Z" fill="none" stroke="#00f0ff" stroke-width="3"/><circle cx="66" cy="30" r="4" fill="none" stroke="#00f0ff" stroke-width="2"/><line x1="5" y1="20" x2="26" y2="20" stroke="#00f0ff" stroke-width="3"/><line x1="5" y1="40" x2="26" y2="40" stroke="#00f0ff" stroke-width="3"/><line x1="70" y1="30" x2="95" y2="30" stroke="#00f0ff" stroke-width="3"/></svg>`,
+                "XOR": `<svg viewBox="0 0 100 60"><path d="M12,10 Q27,30 12,50" fill="none" stroke="#00f0ff" stroke-width="3"/><path d="M22,10 Q42,10 67,30 Q42,50 22,50 Q37,30 22,10 Z" fill="none" stroke="#00f0ff" stroke-width="3"/><line x1="5" y1="20" x2="26" y2="20" stroke="#00f0ff" stroke-width="3"/><line x1="5" y1="40" x2="26" y2="40" stroke="#00f0ff" stroke-width="3"/><line x1="67" y1="30" x2="95" y2="30" stroke="#00f0ff" stroke-width="3"/></svg>`,
+                "XNOR": `<svg viewBox="0 0 100 60"><path d="M12,10 Q27,30 12,50" fill="none" stroke="#00f0ff" stroke-width="3"/><path d="M22,10 Q42,10 62,30 Q42,50 22,50 Q37,30 22,10 Z" fill="none" stroke="#00f0ff" stroke-width="3"/><circle cx="68" cy="30" r="4" fill="none" stroke="#00f0ff" stroke-width="2"/><line x1="5" y1="20" x2="26" y2="20" stroke="#00f0ff" stroke-width="3"/><line x1="5" y1="40" x2="26" y2="40" stroke="#00f0ff" stroke-width="3"/><line x1="72" y1="30" x2="95" y2="30" stroke="#00f0ff" stroke-width="3"/></svg>`
+            };
+            return svgTemplates[gate] || svgTemplates["AND"];
+        }
+
+        function updateSimulator() {
+            const meta = gateMetadata[currentGate];
+            const outY = currentGate === "NOT" ? meta.fn(inA) : meta.fn(inA, inB);
+
+            // Update SVG & LED
+            document.getElementById("gateSvgBox").innerHTML = renderGateSVG(currentGate);
+            const led = document.getElementById("ledIndicator");
+            led.className = `led-glow-bulb ${outY === 1 ? 'high' : 'low'}`;
+            document.getElementById("outText").innerText = `Output Y = ${outY} (${outY === 1 ? 'HIGH' : 'LOW'})`;
+            document.getElementById("formulaBadge").innerText = `${meta.expr} • ${meta.ic}`;
+
+            // Update Dynamic Truth Table
+            const tbody = document.getElementById("truthTableBody");
+            const thead = document.getElementById("tableHead");
+            
+            if (currentGate === "NOT") {
+                thead.innerHTML = `<th>Input A</th><th>Output Y</th><th>State</th>`;
+                tbody.innerHTML = [0, 1].map(a => {
+                    const res = meta.fn(a);
+                    const isActive = (a === inA);
+                    return `<tr class="${isActive ? 'active-row' : ''}">
+                        <td>${a}</td><td>${res}</td><td>${isActive ? '👉 ACTIVE' : ''}</td>
+                    </tr>`;
+                }).join("");
+            } else {
+                thead.innerHTML = `<th>Input A</th><th>Input B</th><th>Output Y</th><th>State</th>`;
+                const pairs = [[0,0], [0,1], [1,0], [1,1]];
+                tbody.innerHTML = pairs.map(([a, b]) => {
+                    const res = meta.fn(a, b);
+                    const isActive = (a === inA && b === inB);
+                    return `<tr class="${isActive ? 'active-row' : ''}">
+                        <td>${a}</td><td>${b}</td><td>${res}</td><td>${isActive ? '👉 ACTIVE' : ''}</td>
+                    </tr>`;
+                }).join("");
+            }
+        }
+        updateSimulator();
+
+        // =========================================================================
+        // Sequential Flip-Flop Lab Logic
+        // =========================================================================
+        const ffState = {
+            sr: { s: 0, r: 0, q: 0 },
+            jk: { j: 0, k: 0, q: 0 },
+            d:  { d: 0, q: 0 },
+            t:  { t: 0, q: 0 }
+        };
+
+        function switchFF(type) {
+            playBeep(650, 0.05);
+            document.querySelectorAll(".ff-tab-btn").forEach(btn => btn.classList.remove("active"));
+            document.querySelectorAll(".ff-card").forEach(card => card.classList.remove("active"));
+            event.target.classList.add("active");
+            document.getElementById(`ff-${type}`).classList.add("active");
+        }
+
+        function setFFInput(varName, val) {
+            playBeep(520, 0.05);
+            if (varName === 'S') { ffState.sr.s = val; updateBtnToggles("srS", val); }
+            if (varName === 'R') { ffState.sr.r = val; updateBtnToggles("srR", val); }
+            if (varName === 'J') { ffState.jk.j = val; updateBtnToggles("jkJ", val); }
+            if (varName === 'K') { ffState.jk.k = val; updateBtnToggles("jkK", val); }
+            if (varName === 'D') { ffState.d.d = val; updateBtnToggles("dD", val); }
+            if (varName === 'T') { ffState.t.t = val; updateBtnToggles("tT", val); }
+        }
+
+        function updateBtnToggles(prefix, val) {
+            document.getElementById(`${prefix}0`).classList.toggle("active", val === 0);
+            document.getElementById(`${prefix}1`).classList.toggle("active", val === 1);
+        }
+
+        function triggerClockPulse(ffType) {
+            playBeep(950, 0.12);
+            if (ffType === 'sr') {
+                const { s, r } = ffState.sr;
+                if (s === 0 && r === 0) {
+                    document.getElementById("srStatus").innerText = "Status: Hold (No Change)";
+                } else if (s === 0 && r === 1) {
+                    ffState.sr.q = 0;
+                    document.getElementById("srStatus").innerText = "Status: Reset to 0";
+                } else if (s === 1 && r === 0) {
+                    ffState.sr.q = 1;
+                    document.getElementById("srStatus").innerText = "Status: Set to 1";
+                } else {
+                    document.getElementById("srStatus").innerText = "⚠️ Invalid / Metastable Condition";
+                }
+                document.getElementById("srQ").innerText = `Q = ${ffState.sr.q}`;
+                document.getElementById("srQbar").innerText = `Q̅ = ${1 - ffState.sr.q}`;
+            }
+            else if (ffType === 'jk') {
+                const { j, k } = ffState.jk;
+                if (j === 0 && k === 0) {
+                    document.getElementById("jkStatus").innerText = "Status: Hold State";
+                } else if (j === 0 && k === 1) {
+                    ffState.jk.q = 0;
+                    document.getElementById("jkStatus").innerText = "Status: Reset to 0";
+                } else if (j === 1 && k === 0) {
+                    ffState.jk.q = 1;
+                    document.getElementById("jkStatus").innerText = "Status: Set to 1";
+                } else {
+                    ffState.jk.q = 1 - ffState.jk.q;
+                    document.getElementById("jkStatus").innerText = "Status: State Toggled";
+                }
+                document.getElementById("jkQ").innerText = `Q = ${ffState.jk.q}`;
+                document.getElementById("jkQbar").innerText = `Q̅ = ${1 - ffState.jk.q}`;
+            }
+            else if (ffType === 'd') {
+                ffState.d.q = ffState.d.d;
+                document.getElementById("dStatus").innerText = `Status: Latched D = ${ffState.d.d}`;
+                document.getElementById("dQ").innerText = `Q = ${ffState.d.q}`;
+                document.getElementById("dQbar").innerText = `Q̅ = ${1 - ffState.d.q}`;
+            }
+            else if (ffType === 't') {
+                if (ffState.t.t === 1) {
+                    ffState.t.q = 1 - ffState.t.q;
+                    document.getElementById("tStatus").innerText = "Status: Inverted (Toggled)";
+                } else {
+                    document.getElementById("tStatus").innerText = "Status: Hold State (T=0)";
+                }
+                document.getElementById("tQ").innerText = `Q = ${ffState.t.q}`;
+                document.getElementById("tQbar").innerText = `Q̅ = ${1 - ffState.t.q}`;
+            }
+        }
+
+        // =========================================================================
+        // Quiz Engine Logic
+        // =========================================================================
+        const quizBank = {
+            easy: [
+                { q: "What is the minimum number of inputs for a standard AND gate?", o: ["1", "2", "3", "4"], a: 1 },
+                { q: "Which gate gives HIGH output when any input is HIGH?", o: ["AND", "OR", "NAND", "NOR"], a: 1 },
+                { q: "What is the standard IC number for a Quad 2-Input NAND Gate?", o: ["7408", "7432", "7400", "7486"], a: 2 },
+                { q: "XOR gate output is HIGH when inputs are:", o: ["Both 0", "Both 1", "Different", "Identical"], a: 2 }
+            ],
+            medium: [
+                { q: "Which of the following is known as a Universal Gate?", o: ["AND", "OR", "NAND", "XOR"], a: 2 },
+                { q: "How many selection lines are required for an 8:1 Multiplexer?", o: ["2", "3", "4", "8"], a: 1 },
+                { q: "Which condition in an SR Flip-Flop is forbidden / invalid?", o: ["S=0, R=0", "S=0, R=1", "S=1, R=0", "S=1, R=1"], a: 3 },
+                { q: "Which IC is typically used as a 3:8 Line Decoder?", o: ["IC 7400", "IC 74138", "IC 74151", "IC 7476"], a: 1 }
+            ],
+            hard: [
+                { q: "What is the characteristic equation for a JK Flip-Flop?", o: ["Q(next) = JQ̅ + K̅Q", "Q(next) = J + K", "Q(next) = D", "Q(next) = T ⊕ Q"], a: 0 },
+                { q: "How many flip-flops are required to construct a MOD-32 Ripple Counter?", o: ["4", "5", "6", "32"], a: 1 },
+                { q: "In an excitation table, what are J and K when transitioning from state 0 to 1?", o: ["J=0, K=X", "J=1, K=X", "J=X, K=0", "J=X, K=1"], a: 1 },
+                { q: "Which circuit has outputs that depend ONLY on present inputs (no memory)?", o: ["Sequential", "Combinational", "Flip-Flop", "Counter"], a: 1 }
+            ]
+        };
+
+        let activeQuizLevel = 'easy';
+
+        function loadQuiz(level) {
+            playBeep(600, 0.05);
+            activeQuizLevel = level;
+            document.querySelectorAll(".diff-btn").forEach(btn => btn.classList.remove("active"));
+            event.target.classList.add("active");
+
+            const qList = quizBank[level];
+            const quizBox = document.getElementById("quizBox");
+            document.getElementById("quizResultText").innerText = "";
+
+            quizBox.innerHTML = qList.map((item, idx) => `
+                <div class="question-card">
+                    <div class="question-title">Q${idx + 1}. ${item.q}</div>
+                    ${item.o.map((opt, oIdx) => `
+                        <label class="opt-label">
+                            <input type="radio" name="q_${idx}" value="${oIdx}">
+                            <span>${opt}</span>
+                        </label>
+                    `).join("")}
+                </div>
+            `).join("");
+        }
+        loadQuiz('easy');
+
+        function evaluateQuiz() {
+            playBeep(850, 0.1);
+            const qList = quizBank[activeQuizLevel];
+            let score = 0;
+            qList.forEach((item, idx) => {
+                const selected = document.querySelector(`input[name="q_${idx}"]:checked`);
+                if (selected && parseInt(selected.value) === item.a) {
+                    score++;
+                }
+            });
+
+            const resultText = document.getElementById("quizResultText");
+            resultText.innerText = `🎯 Score: ${score} / ${qList.length} (${Math.round((score/qList.length)*100)}%)`;
+
+            if (score === qList.length) {
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
